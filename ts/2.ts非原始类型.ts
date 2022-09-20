@@ -13,6 +13,17 @@ let listStr: string[] = ["1", "zhangsan", "qiqi"];
 listStr[2] = "gsg";
 // 泛型
 let arr : Array<string> = ["string"]
+// 接口
+interface IItem {
+  id: number;
+  name: string;
+  isGod: boolean;
+}
+const objectArr1: IItem[] = [{ id: 1, name: '俊劫', isGod: true }];
+// or
+const objectArr2: Array<IItem> = [{ id: 1, name: '俊劫', isGod: true }];
+//用 any 表示数组中允许出现任意类型
+let listAny: any[]
 
 // 元组
 let tuple: [string, number] = ["hello", 1];

@@ -3,7 +3,7 @@ typeScript学习记录
 # 一、概述
 TypeScript is JavaScript with syntax for types,ts就是带上类型语法的js,是js的超集。
 主要学习类型检查,文件是以 .ts扩展名。
-安装:npm install -g typescript 或者指定版本 npm install -g typescript@4.5.2
+安装:npm install -g typescript 或者指定版本 npm install -g typescript@4.5.2,安装完成之后，我们就可以在任何地方执行 tsc 命令了。
 检查是否安装成功:tsc -v 可以查看安装版本信息。
 初始化ts项目:tsc -init,创建tsconfig.json文件,这个文件中指定了用来编译这个项目的根文件和其它编译选项。 
 编译成js文件:tsc helloworld.ts
@@ -14,19 +14,23 @@ TypeScript支持与JavaScript几乎相同的数据类型，此外还提供了实
 布尔值、数字、字符串、null、undefined、符号类型、bigint,它们对应的类型值如下:
 boolean、number、string、null、undefined、symbol。
 默认情况下 null 和 undefined 是所有类型的子类型,也就是说null和undefined值可以赋值给其它类型。
+
 let声明的变量值是什么类型变量就是什么类型,const声明的变量值就是变量的类型。
 函数没有返回值时类型是void,意味空的。
-使用方法:
-let 变量名:基本类型名 = 变量值;
+使用方法:在变量后面添加:ts类型名 即可。这种就是ts的类型注解语法，它显性的声明变量的类型约束。
+let 变量名:类型名 = 变量值;
 如:let str:string = "我是字符串类型";
 这样就表示变量  str 是字符串类型，如果赋值其它类型就会报错。
 这样就可以帮助我们提前发现代码中的错误。
+
 然后是ts自己添加的类型:any、unknown、以及void。
 any类型任意类型不清楚用什么类型，就可以使用 any 类型。它绕过类型校验，不希望类型检查器对这些值进行检查而是直接让它们通过编译阶段的检查。实际开发中不建议使用不然就丧失了 TS 的意义。
 
 unknown类型也代表任何类型，它的定义和 any 定义很像，但是它是一个安全类型，使用 unknown 做任何事情都是不合法的。这是因为它不绕过类型校验，同时它声明变量值只能赋值给any类型和它本身。
 
 void 与 any 类型相反表示没有任何类型为空，当一个函数没有返回值时 TS 会认为它的返回值是 void 类型。
+声明一个 void 类型的变量没有什么用，因为你只能将它赋值为 undefined 和 null，如下
+let unusable: void = undefined;
 
 never类型表示的是那些永不存在的值的类型，它是任何类型的子类型，也可以赋值给任何类型。
 有些情况下值会永不存在，比如，
@@ -39,7 +43,7 @@ never类型表示的是那些永不存在的值的类型，它是任何类型的
 可以使用三种形式:object、Object、{}，一般使用小写的object。
 
 数组类型:有两种方式可以定义数组。 
-第一种，可以在基本类型后面接上[]，表示由此基本类型元素组成的一个数组。
+第一种，可以在类型名称后面接上[]，表示由此基本类型元素组成的一个数组。注意它可以是接口，这样就变成了一个对象数组
 list: number[] 纯数字数组，listStr: string[] 纯字符串数组。
 第二种方式是使用数组泛型，Array<元素类型>。
 
@@ -49,10 +53,8 @@ list: number[] 纯数字数组，listStr: string[] 纯字符串数组。
 但是元组的写法是写死了位置上对应的类型的。
 let x: [string, number];
 
-联合类型（Union Types）:表示一个变量可以支持多种类型。或的意思用竖线（ |）分隔每个类型，
-所以 number | string | boolean表示一个值可以是 number， string，或 boolean。
-如一个希望是number或 string类型的参数。
-let numAndstr :number | string = 10;
+联合类型（Union Types）:表示一个变量可以支持多种类型，或的意思用竖线（|）分隔每个类型，所以 number | string | boolean表示一个值可以是 number， string，或 boolean。
+如一个希望是number或 string类型的参数，let numAndstr :number | string = 10。
 
 交叉类型:表示将多个类型合并为一个类型。 这让我们可以把现有的多种类型叠加到一起成为一种类型，它包含了所需的所有类型的特性。and的意思用 （&）符号连接每个类型。
 交叉类型和 interface 的 extends 非常类似，都是为了实现对象形状的组合和扩展。
@@ -90,16 +92,16 @@ let strLength: number = (someValue as string).length;
 
 # 三、接口
 上面我们已经可以描述一个对象的类型了，但是对象里的每个字段类型约束还没有。
-而 interface(接口) 就是 TS 设计出来用于定义对象类型的，可以对对象的形状进行描述。
-接口一般首字母要大写,它的作用主要是定义给对象、数组、函数用的校验每个字段跟接口定义的字段类型是否一致，类型检查器不会去检查属性的顺序，只要相应的属性存在并且类型也是对的就可以。
-接口里的属性不全都是必需的。 有些是只在某些条件下存在，或者根本不存在，可以使用 ?: 表示可选。
-一些对象属性只能在对象刚刚创建的时候修改其值。 你可以在属性名前用 readonly来指定只读属性。
+而 interface(接口) 就是 TS 设计出来用于定义对象类型的，可以对对象的形状(Shape)进行描述。
+接口一般首字母要大写,它的作用主要是定义给对象、数组、函数用的，用来校验它们的每个字段跟接口定义的字段类型是否一致，类型检查器不会去检查属性的顺序，只要相应的属性存在并且类型也是对的就可以。
+接口里的属性不全都是必需的。有些是只在某些条件下存在，或者根本不存在，可以使用 ?: 表示可选。
+一些对象属性只能在对象刚刚创建的时候修改其值。 你可以在属性名前用 readonly 来指定只读属性。
 声明语法如下:描述对象
 interface 接口名{
   name:string,
   字段名:类型约束,
   color?: string;//可选字段,
-  readonly x: number;
+  readonly x: number;//只读字段
 }
 描述数组
 interface Myarr{
@@ -109,12 +111,12 @@ interface Myarr{
 interface Myfn {
   (a: number,b: number): number
 } 
-使用时属性必须和类型定义的时候完全一致，可选的可不定义，只读的不能修改。
-少写多写了属性都会报错，
-const p1: Person = {
-    name: 'lin',
-    age: 18
+描述对象
+interface Myobj {
+    name: string;
+    age: number;
 }
+使用时属性必须和类型定义的时候完全一致，与位置无关，可选的可不定义，只读的不能修改，少写多写了属性都会报错。
 
 接口重复声明会合并重复的声明。
 interface Person {
@@ -128,7 +130,7 @@ const person: Person = {
     age: 18
 }
 
-接口继承:和类一样，接口也可以相互继承，也可以继承类型别名type声明的类型，也使用 extends关键字,继承 多个接口名和类型别名声明的名字逗号隔开即可,相当于从一个接口里复制所有成员到另一个接口里所以继承的属性也要写上不然报错。
+接口继承:和类一样，接口也可以相互继承，也可以继承类型别名type声明的类型，也使用 extends关键字,继承 多个接口名和类型别名声明的名字逗号隔开即可,本质上相当于从一个接口里复制所有成员到另一个接口里所以继承的属性也要写上不然报错。
 // interface 继承 interface
 interface Person { 
   name: string 
@@ -143,7 +145,7 @@ interface Student extends Person,Person1{
 const person:Student = {
   name: 'lin',
   grade: 100,
-  gender: 
+  gender: 'male'
 }
 
 # 四、函数
@@ -206,17 +208,61 @@ s1.study()
 
 
 # 六、泛型
-泛型（Generics）是指在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定类型的一种特性。可以理解为类型的形参，通过类型变量将类型参数化。类型变量它是一种特殊的变量，只用于表示类型而不是值。也就是将来使用具体的类型代替类型变量。一般可以用 T 来表示类型变量。
+## 6.1 泛型概述
+泛型（Generics）是指在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定类型的一种特性。
+可以理解为类型的形参，通过类型变量将类型参数化。类型变量它是一种特殊的变量，只用于表示类型而不是值。也就是将来使用具体的类型代替类型变量，一般可以用 T 代表 Type 来表示类型变量。常见泛型变量代表还有如下几个
+  K（Key）：表示对象中的键类型；
+  V（Value）：表示对象中的值类型；
+  E（Element）：表示元素类型。
 语法:
-尖括号 <类型变量>表示一个泛型。
-泛型类使用（ <>）括起泛型类型，跟在类名后面。
-泛型约束:再定义一个接口来描述约束条件。 创建一个包含 .length属性的接口，使用这个接口和extends关键字来实现约束。
-//函数,下面就是说函数的形参arg的类型和函数的返回值都是泛型T，他们的具体类型是在调用时传入指定的。
-function  fn<T>(arg:T):T{
-  return arg;
+尖括号 <类型变量1,类型变量2,.....,>表示一个泛型,其中它可以包含多个类型变量。
+  当你的函数、接口或类将处理多种数据类型时或者当函数、接口或类在多个地方使用该数据类型时就应该使用泛型。
+
+## 6.2 泛型接口
+在定义接口时也可以使用泛型
+interface Identities<T, U> {
+  value: T,
+  message: U
 }
-//使用
-fn<number>(20)
+function identity<T, U> (value: T, message: U): Identities<T, U> {
+  console.log(value + ": " + typeof (value));
+  console.log(message + ": " + typeof (message));
+  let identities: Identities<T, U> = {
+    value,
+    message
+  };
+  return identities;
+}
+
+console.log(identity(68, "Semlinker"));
+## 6.3 泛型类
+在类中使用泛型也很简单，我们只需要在类名后面，使用 <T, ...> 的语法定义任意多个类型变量
+interface GenericInterface<U> {
+  value: U
+  getIdentity: () => U
+}
+//类实现接口implements
+class IdentityClass<T> implements GenericInterface<T> {
+  value: T
+  constructor(value: T) {
+    this.value = value
+  }
+  getIdentity(): T {
+    return this.value
+  }
+
+}
+
+const myNumberClass = new IdentityClass<Number>(68);
+console.log(myNumberClass.getIdentity()); // 68
+
+const myStringClass = new IdentityClass<string>("Semlinker!");
+console.log(myStringClass.getIdentity()); // Semlinker!
+类型值是沿链向上传播，且与类型变量名无关。所以上面类型变量名U和T并不影响传值。
+
+## 6.4 泛型约束
+希望类型变量对应的类型上存在某些属性。这时，除非我们显式地将特定属性定义为类型变量，否则编译器不会知道它们的存在。这时可以让类型变量 extends 一个含有我们所需属性的接口。此外，我们还可以使用逗号 , 号来分隔多种约束类型，比如：<T extends Length, Type2, Type3>。
+keyof操作符用于获取某种类型的所有键，其返回类型是联合类型。
 
 
 # 六、工具类型
