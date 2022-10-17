@@ -1,10 +1,10 @@
 export {}
-// 对象
+// 对象类型-3中声明方式
 let obj: object = {name: "zhangsan"};
 let obj2: Object = {name: "lisi"};
 let obj3: {} = {name: "wangwu"};
 
-// 数组
+// 数组类型声明方式
 let list: number[] = [1, 2, 3];
 list[0] = 10;
 // list[2] = "gsg";//报错因为不是数值 类型
@@ -13,13 +13,26 @@ let listStr: string[] = ["1", "zhangsan", "qiqi"];
 listStr[2] = "gsg";
 // 泛型
 let arr : Array<string> = ["string"]
+// 定义接口
+interface IItem {
+  id: number;
+  name: string;
+  isGod: boolean;
+}
+// 
+const objectArr1: IItem[] = [{ id: 1, name: '俊劫', isGod: true }];
+// or
+const objectArr2: Array<IItem> = [{ id: 1, name: '俊劫', isGod: true }];
+//用 any 表示数组中允许出现任意类型
+let listAny: any[]
 
-// 元组
+// 元组类型
 let tuple: [string, number] = ["hello", 1];
 
 // 联合类型
-let numAndstr : number | string = 10;
+let numAndstr : number | string ;
 numAndstr = "hello"
+numAndstr = 10
 
 // 交叉类型
 interface Person {
