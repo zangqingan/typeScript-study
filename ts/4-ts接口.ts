@@ -6,7 +6,7 @@ interface Mylife{
   name: string,
   age: number
 }
-//属性要一致
+//属性名和类型要一致，
 let life: Mylife = {
   city: "hangzhou",
   name: "zhangsan",
@@ -49,10 +49,10 @@ let pernson: gender = {
 type  typeObj = {
   address: string
 }
-interface msg extends NameItf,AgeItf, typeObj{
+interface Msg extends NameItf,AgeItf, typeObj{
    lang:string
 }
-const person2: msg = {
+const person2: Msg = {
   address:"guangzhou",
   lang:"chinese",
   name:"lili",

@@ -41,29 +41,9 @@ interface Person {
 }
 type Student = Person & { grade: number }// 交叉类型
 
-// 类型别名
-type flag = string | number;
-function hello(value: flag) {}
-type Name = string                              // 基本类型
-type arrItem = number | string                  // 联合类型
-const typearr: arrItem[] = [1,'2', 3]
-
-type Teacher = Person & { major: string  } 
-
-type StudentAndTeacherList = [Student, Teacher]  // 元组类型
-const typelist:StudentAndTeacherList = [
-  { name: 'lin', age:27,grade: 100 }, 
-  { name: 'liu', age:40,major: 'Chinese' }
-]
-
 // 类型断言
 let someValue: any = "this is a string";
 let strLength: number = (someValue as string).length;
-
-
-
-
-
 
 
 

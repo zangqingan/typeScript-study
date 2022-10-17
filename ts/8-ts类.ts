@@ -1,4 +1,5 @@
 export {}
+// 类定义
 class Parent {
   public name: string;
   protected age: number;
@@ -44,6 +45,7 @@ abstract class Animal {
   name!: string;
   abstract speak(): void;
 }
+// 必须实现
 class Cat extends Animal {
   speak() {
     console.log("喵喵喵");
@@ -66,4 +68,35 @@ class Person implements Speakable, Eatable {
     console.log("Person说话");
   }
   eat() {} //需要实现的接口包含eat方法 不实现会报错
+}
+
+// 报警器-类实现接口例子
+interface Alarm {
+  alert(): void;
+}
+
+interface Light {
+  lightOn(): void;
+  lightOff(): void;
+}
+
+class Door {
+}
+
+class SecurityDoor extends Door implements Alarm {
+    alert() {
+        console.log('SecurityDoor alert');
+    }
+}
+// Car 实现了 Alarm 和 Light 接口，既能报警，也能开关车灯。
+class Car implements Alarm, Light {
+    alert() {
+        console.log('Car alert');
+    }
+    lightOn() {
+      console.log('Car light on');
+    }
+    lightOff() {
+        console.log('Car light off');
+    }
 }
