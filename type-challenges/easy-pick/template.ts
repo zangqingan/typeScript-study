@@ -37,7 +37,7 @@ type MyPick<T, K extends keyof T> = {
 // 2.在ts里遍历也是使用 in 操作符，涉及的ts知识点是 Mapped
 // 3.ts里对象使用属性变量取值也是使用中括号 [] ，涉及的ts知识点是 indexed
 // 4.在ts里可以使用 extends 来对类型变量进行约束,使用 keyof 可以对接口所有的属性进行遍历，最终返回一个类似字符串数组的接口 ['a','b']
-// ，涉及的ts知识点是 keyof lookup
+// ，涉及的ts知识点是 keyof lookup。extends Generic Constraints。
 
 
 
