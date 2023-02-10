@@ -387,9 +387,22 @@ keyof操作符用于获取某种类型的所有键，其返回类型是联合类
 # 九、工具类型
 Partail部分属性
 
+# 十、ts类型体操训练
+环境搭建：创建一个type-challenges目录专门用来存放，安装@type-challenges/utils包用来检测自己写的是否正确。
+实现写在template.ts里，测试case复制原仓库里的，还可以把readme文件拿过来说明当前类型训练的要求是什么。
 
-
-
+映射类型：所谓映射类型：它是一种泛型类型，它使用PropertyKeys的联合（通常通过keyof创建）来遍历键以创建类型。
+通过in 和 keyof 完成。
+type OptionsFlags<T> = {
+  属性名：属性值
+  -readonly [P in keyof T]: T[P];
+  -readonly [Property in keyof Type]: boolean;
+  [P in keyof Type]-?: T[P];
+  [P in keyof T as NewKeyType]: T[P]
+};
+上面的类型OptionsFlags将从类型Type中获取它的所有属性，并将其值更改为布尔值。也就是所OptionsFlags类型的属性名是Type里所有的属性名，但是值统一改成了布尔值类型。
+对于只读和可选属性可以通过 - 符号来去除。
+此外还可以通过 as 关键字 重命名key 的名字
 
 
 
