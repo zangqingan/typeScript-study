@@ -1,7 +1,7 @@
 export {}
 
 // 对象接口类型
-interface Mylife{
+interface Mylife {
   city: string,
   name: string,
   age: number
@@ -14,7 +14,7 @@ let life: Mylife = {
 }
 // 数组接口类型
 interface Arritf{
-  // 下标类型: 值类型
+  // [下标: 下标类型]: 值类型
   [index: number]: number|string,
 }
 let itfArr: Arritf = [1,"zhangsan"] 

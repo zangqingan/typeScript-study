@@ -1,7 +1,7 @@
 # typeScript-study
 typeScript学习记录
 # 一、概述
-TypeScript is JavaScript with syntax for types,TypeScript就是带上类型语法的JavaScript,它是JavaScript的超集。简称ts，它是静态类型的，所谓静态类型是指ts的类型检查是在编译阶段，也就是ts代码编译为js代码的时候做类型检查。
+TypeScript is JavaScript with syntax for types,TypeScript就是带上类型语法的JavaScript,它是JavaScript的超集。简称ts，它是静态类型的，所谓静态类型是指ts的类型检查是在编译阶段，也就是ts代码在编译为js代码的时候才做类型检查。
 主要学习类型检查,文件是以 .ts 为扩展名。
 安装:npm install -g typescript 或者指定版本 npm install -g typescript@4.5.2,安装完成之后，我们就可以在任何地方执行 tsc 命令了。
 检查是否安装成功:tsc -v 可以查看安装版本信息。
@@ -9,24 +9,51 @@ TypeScript is JavaScript with syntax for types,TypeScript就是带上类型语�
 编译成js文件:tsc helloworld.ts
 
 # 二、类型
-在 TypeScript 中，我们使用冒号后跟类型名来指定一个变量的类型。即 :指定变量的类型，冒号的前后有没有空格都可以。
+在 TypeScript 中，我们使用冒号后跟类型名来指定一个变量的类型。即 变量名:指定变量的类型，冒号的前后有没有空格都可以。
 具体使用方法:在变量后面添加 :ts类型名 即可。这种是ts的类型注解语法，它显性的声明变量的类型约束。
 let 变量名:类型名 = 变量值;
 如:let str:string = "我是字符串类型";
+常见变量类型声明格式
+变量名	   JavaScript	       TypeScript
+字符串	     'str'/"str"	    str:string
+数值	         5	            num:number
+布尔值	       true/false     bool:boolean
+大整数	        BigInt	      big:bigint
+符号	          Symbol	      sym:symbol
+不存在	        Null	        n:null 
+未定义	        Undefined	    un:undefined
+联合类型     'str' || 3       strOrNum: string | number
+对象          {}              obj:Object /obj:object /obj:{}  只是一个对象
+对象          {}              obj:接口名       对对象属性的类型进行约束
+对象          {}              obj:类型别名     对对象属性的类型进行约束
+数组          []              基本类型名:[] / 接口名:[]
+数组          []              Array<基本类型名> / Array<接口名>
+
+
+
 这样就表示变量 str 是字符串类型，如果赋值其它类型就会报错。
 这样就可以帮助我们提前发现代码中的错误。在ts中有很多类型，常见的如下：
 ## 2.1基本类型
-TypeScript支持与JavaScript几乎相同的数据类型，此外还提供了实用的枚举类型方便我们使用。 
-布尔值、数字、字符串、null、undefined、符号类型、bigint,它们对应的ts类型值如下:
-boolean、number、string、null、undefined、symbol。
+TypeScript支持与JavaScript几乎相同的数据类型转为全小写即可，此外还提供了实用的枚举类型方便我们使用。 
+原始数据类型	JavaScript	TypeScript
+字符串	        String	    string
+数值	          Number	    number
+布尔值	        Boolean	    boolean
+大整数	        BigInt	    bigint
+符号	          Symbol	    symbol
+不存在	        Null	        null 
+未定义	        Undefined	  undefined
+
 默认情况下 null 和 undefined 是所有类型的子类型,也就是说null和undefined值可以赋值给其它类型。
 // 这样不会报错
 let num: number = undefined;
 
 let声明的变量值是什么类型变量就是什么类型,const声明的变量值就是变量的类型。
+原始数据类型是可以不显式声明类型的，因为ts会进行类型推论，根据声明变量时赋值的类型，自动推导出变量类型。
 函数没有返回值时类型是void,意味空的。
 
 然后是ts自己添加的类型:any、unknown、void以及never。
+
 any类型,也就是任意类型不清楚用什么类型，就可以使用 any 类型。它会绕过类型校验，不希望类型检查器对这些值进行检查而是直接让它们通过编译阶段的检查。实际开发中不建议使用不然就丧失了 TS 的意义。
 同时对any类型值得任何操作，其返回值还是any类型。
 变量声明时未指定其类型那么会被识别为any类型。
@@ -47,15 +74,30 @@ never类型表示的是那些永不存在的值的类型，它是任何类型的
 ## 2.2非基本类型
 可以说除了上面说的基本类型，剩下的都是非基本类型。
 
-对象类型:object表示非原始类型，也就是除number，string，boolean，symbol，null或undefined之外的类型。
-可以使用三种形式:object、Object、{}，一般使用小写的object。
-不过这种类型只能指定变量是一个对象而不能指定对象某个属性的具体类型。所以一般也不怎么用。
+对象类型: 我们知道JavaScript中对象是一个键值对的集合，它表示非原始类型，也就是除number，string，boolean，symbol，null或undefined之外的类型。在ts中也可以使用三种形式:object、Object、{}，来定义一个变量时对象类型，一般使用小写的object。
+但是这种类型只能指定变量是一个对象而不能指定对象键的具体类型所以一般也不怎么用，在ts中提供了类型别名 type 和 接口interface 来对对象键的类型进行约束。
+非原始类型	JavaScript	TypeScript
+对象	      Object/{}	    Object/object/{}
+对象	      Object/{}	     类型别名
+对象        Object/{}	     接口
 
 数组类型:有多种方式可以定义数组，比较灵活。 
-第一种，可以在类型名称后面接上[]，表示由此基本类型元素组成的一个数组，这时数组中的项不允许是其它类型的。注意这个类型它可以是接口，这样就变成了一个对象数组
-list: number[] 纯数字数组，listStr: string[] 纯字符串数组。
-第二种方式是使用数组泛型，Array< elemType >，Array<元素类型>。
-这里这个elemType元素类型可以是基本类型、接口、类型别名。
+第一种，可以在基本类型名称后面接上方括号[]，表示由此基本类型元素组成的一个数组，这时数组中的项不允许是其它类型的。注意这个类型它可以是接口，这样就变成了一个对象数组
+如 list: number[] 纯数字数组，listStr: string[] 纯字符串数组。
+第二种方式是使用数组泛型，Array< elemType >，即：Array<元素类型>。
+这里这个elemType元素类型也可以是基本类型、接口、类型别名,其中使用接口数组泛型组合的非常常用。
+总结如下：
+数组里的数据	类型写法 1	  类型写法 2
+字符串	      string[]	    Array<string>
+数值	        number[]	    Array<number>
+布尔值	      boolean[]	    Array<boolean>
+大整数	      bigint[]	    Array<bigint>
+符号	        symbol[]	    Array<symbol>
+不存在	      null[]	      Array<null>
+未定义	      undefined[]	  Array<undefined>
+接口          接口名[]      Array<接口名>  常用
+any           any[]        Array<any>
+
 
 元组类型（ Tuple ）表示一个已知数量和类型的数组 其实可以理解为是一种特殊的数组。
 也就是说当你想一个数组内每一项放入不同数据时就使用元组类型。
@@ -98,34 +140,42 @@ let strLength: number = (someValue as string).length;
 通常我们会把声明语句放到一个单独的文件（xxx.d.ts）中，这就是声明文件。注意：声明文件必需以 .d.ts 为后缀。
 
 # 三、接口
-上面我们已经可以描述一个对象的类型了，但是对象里的每个字段类型约束还没有。
-而 interface(接口) 就是 TS 设计出来用于定义对象类型的，可以对对象的形状(Shape)进行描述。也就是对对象属性的类型进行声明约束。
-接口一般首字母要大写,它的作用主要是定义给对象、数组、函数用的，用来校验它们的每个字段跟接口定义的字段类型是否一致，类型检查器不会去检查属性的顺序，只要相应的属性存在并且类型是否符合要求就可以。
-接口里的属性不全都是必需的。有些是只在某些条件下存在，或者根本不存在，可以使用 ?: 表示可选。
+上面我们已经可以描述一个变量时对象类型了，但是对象里的每个字段(键)的类型约束还没有。
+而 interface(接口) 就是 TS 设计出来用于定义对象键的类型的，它可以对对象的形状(Shape)进行描述。也就是对对象属性的类型进行声明约束。
+接口名一般要求每个单词的首字母大写也就是大驼峰命名法,它的作用主要是定义给对象、数组、函数用的，用来校验它们的每个字段跟接口定义的字段类型是否一致，类型检查器不会去检查属性的顺序，只要相应的属性存在并且类型是否符合要求就可以。
+接口里的属性不全都是必需的。有些是只在某些条件下存在，或者根本不存在，可以使用 ? 表示可选。
 一些对象属性只能在对象刚刚创建的时候修改其值。 你可以在属性名前用 readonly 来指定只读属性。
+如果一些属性的结构跟当前接口本身一致，也可以直接引用自己，常用来一些树结构上。
+对变量赋值使用时属性必须和类型定义的时候完全一致，与位置无关，可选的可不定义，只读的不能修改，少写多写了属性都会报错。
+
 接口声明语法如下:
-interface 接口名{
+interface 接口名 {
   字段名:类型约束,
-  字段名?: 类型约束; //可选字段,
-  readonly 字段名: 类型约束; //只读字段
+  字段名?: 类型约束,          //可选字段
+  readonly 字段名: 类型约束,  //只读字段
+  children：接口名[]         //引用自己
 }
+
 描述数组
 interface Myarr{
+  // [下标: 下标类型]: 值类型
   [index:number]: number | string;
   
 }
+
 描述函数
 interface Myfn {
+  // (形参：形参类型,,,): 函数返回值类型
   (a: number,b: number): number
 } 
+
 描述对象
 interface Myobj {
     name: string;
     age: number;
 }
-对变量赋值使用时属性必须和类型定义的时候完全一致，与位置无关，可选的可不定义，只读的不能修改，少写多写了属性都会报错。
 
-接口重复声明会合并重复的声明。
+接口重复声明会合并重复的声明，相当于对象合并。
 interface Person {
     name: string
 }
@@ -137,8 +187,8 @@ const person: Person = {
     age: 18
 }
 
-接口继承:和类一样，接口也可以相互继承，也可以继承类型别名type声明的类型，也使用 extends关键字。
-继承多个接口名和类型别名声明的名字逗号隔开即可,本质上相当于从一个接口里复制所有成员到另一个接口里，所以继承的属性也要写上不然报错。属性叠加。
+接口继承:和类class一样，接口也可以相互继承，也可以继承类型别名type声明的类型，也使用 extends 关键字。
+继承多个接口名和类型别名声明的名字逗号隔开即可,本质上相当于从一个接口里复制其所有成员到另一个接口里，所以继承的属性也要写上不然报错。相当于对象合并不同属性叠加，相同保留后面的，同时还有自己当前定义的。
 // interface 继承 interface
 interface Person { 
   name: string 
@@ -156,6 +206,30 @@ const person:Student = {
   gender: 'male'
 }
 
+如果在继承时不需要记录这么多属性，也可以在继承的过程中舍弃某些属性，通过 Omit 工具类型来实现。
+Omit是ts原生提供的全局使用工具类，用来促进公共类型转换。
+语法：
+interface 接口名 extends Omit<要继承的接口, '要继承接口中的某个属性1' | '要继承接口中的某个属性2'>
+要继承接口中的某个属性1，要继承接口中的某个属性2就不会被继承。
+
+interface UserItem {
+  name: string
+  age: number
+  enjoyFoods: string[]
+  friendList?: UserItem[]
+}
+
+// 这里在继承 UserItem 类型的时候，删除了两个多余的属性
+interface Admin extends Omit<UserItem, 'enjoyFoods' | 'friendList'> {
+  permissionLevel: number
+}
+
+// 现在的 admin 如下
+const admin: Admin = {
+  name: 'Petter',
+  age: 18,
+  permissionLevel: 1,
+}
 # 四、函数 
 JavaScript中函数常见的两种函数定义方式：函数声明、函数表达式。再ts里也是一样的。
 一个函数有输入和输出，输入就是传进来的形参，输出就是函数的返回值。
