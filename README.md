@@ -70,6 +70,7 @@ never类型表示的是那些永不存在的值的类型，它是任何类型的
     函数中执行无限循环的代码，使得程序永远无法运行到函数返回值那一步。
 
 类型推论：TypeScript 会在没有明确的指定类型的时候推测出一个类型，这就是类型推论。
+类型推论的前提是变量在声明时有明确的值，如果一开始没有赋值，那么会被默认为 any 类型。
 
 ## 2.2非基本类型
 可以说除了上面说的基本类型，剩下的都是非基本类型。
@@ -105,7 +106,7 @@ any           any[]        Array<any>
 也就是元组的写法是写死了位置上对应的类型的。
 let x: [string, number] = ["hello", 1];
 
-联合类型（Union Types）:表示一个变量可以支持多种类型，或的意思用竖线（|）来分隔每个类型，所以 number | string | boolean表示一个值可以是 number， string，或 boolean这三种类型中的一种但是不能是其他类型。
+联合类型（Union Types）:表示一个变量可以支持多种类型，或的意思，用竖线（|）来分隔每个类型，所以 number | string | boolean表示一个值可以是 number， string，或 boolean这三种类型中的一种但是不能是其他类型。
 如：一个希望是number或 string类型的参数，let numAndstr :number | string = 10。
 
 交叉类型:表示将多个类型合并为一个类型。 这让我们可以把现有的多种类型叠加到一起成为一种类型，它包含了所需的所有类型的特性。and的意思用 （&）符号连接每个类型。
@@ -120,6 +121,7 @@ type Student = Person & { grade: number }
 语法: 值 as 类型,使用类型断言来告诉 TS，我（开发者）比你（编译器）更清楚这个参数是什么类型，你就别给我报错了。其实就是你需要手动告诉 ts 就按照你断言的那个类型通过编译。
 let someValue: any = "this is a string";
 let strLength: number = (someValue as string).length;
+注意：不要滥用类型断言，只在能够确保代码正确的情况下去使用它。
 
 声明文件：当使用第三方库时，我们需要引用它的声明文件，才能获得对应的代码补全、接口提示等功能。
   declare var 声明全局变量
@@ -230,29 +232,40 @@ const admin: Admin = {
   age: 18,
   permissionLevel: 1,
 }
+
 # 四、函数 
-JavaScript中函数常见的两种函数定义方式：函数声明、函数表达式。再ts里也是一样的。
+JavaScript中函数常见的两种函数定义方式：函数声明、函数表达式。在ts里也是一样的。
 一个函数有输入和输出，输入就是传进来的形参，输出就是函数的返回值。
 所有在ts中给每个形参添加类型之后再为函数本身添加返回值类型，就能完成对函数的约束了。
 而TypeScript可以根据返回语句自动推断出返回值类型，因此我们也通常省略它函数返回值的类型。
 注意：如果函数没有明确返回值，默认返回 void 类型。
-语法如下：
-(x:number)里面写形参的类型，():这是函数返回值的类型。形参也是可以可选的这时要放在函数入参的最后面，不然会导致编译错误,也可以为参数提供一个默认值当用户没有传递这个参数或传递的值是undefined时就使用默认值，如果带默认值的参数不是最后一个参数，用户必须明确的传入 undefined值来获得默认值。
+函数的入参是把类型写在参数后面，返回值是写在圆括号后面。具体语法如下：
+function (形参:形参类型): 函数返回值类型 {}
+function (x:number):void {}
+形参也是可以可选的这时要放在函数入参的最后面，不然会导致编译错误,也可以为参数提供一个默认值当用户没有传递这个参数或传递的值是undefined时就使用默认值，如果带默认值的参数不是最后一个参数，用户必须明确的传入 undefined值来获得默认值。
 注意，输入多余的（或者少于要求的）参数，是不被允许的
+
 // 函数声明形式
 function buildName(firstName: string, lastName?: string):string {
 
 }
-function buildName(firstName: string, lastName = "Smith"):string  {
 
-}
 // 函数表达式形式
 let myAdd = function(x: number, y: number): number { return x + y; };
-// 上面 myAdd的类型是通过赋值操作进行类型推论而推断出来的，其实是没有定义的。手动定义如下：
+// 上面 myAdd变量的类型是ts通过赋值操作进行类型推论而推断出来的，其实是没有定义的。
+手动定义如下：
 let myAdd: (x: number, y: number) => number = function (x: number, y: number): number {
     return x + y;
 };
-注意：在 TypeScript 的类型定义中，=> 用来表示函数的定义，左边是输入类型，需要用括号括起来，右边是输出类型。当然这里可以先用接口或者类型别名定义好函数的形状。而对等号左侧进行类型限制，可以保证以后对函数名赋值时保证参数个数、参数类型、返回值类型不变。
+等于号左边是ts函数类型定义。
+let myAdd: (x: number, y: number) => number
+等于号右边是实际的函数声明。
+注意：在 TypeScript 的类型定义中，函数类型是以 () => void 这样的形式来写的。
+=> 用来表示函数的定义，左边圆括号是函数的形参类型，需要用括号括起来，右边是输出类型。
+由于 TypeScript 会推导函数类型，所以很少会显式的去写出来。
+
+
+当然这里可以先用接口或者类型别名定义好函数的形状。而对等号左侧进行类型限制，可以保证以后对函数名赋值时保证参数个数、参数类型、返回值类型不变。
 interface MyAdd {
   (x: number, y: number) : number
 }
@@ -293,6 +306,26 @@ enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat};
 
 
 # 七、类
+类是es6 推出的一个概念，通过使用class关键字声明。它也可以作为一个类型赋值给一个变量，这时变量的类型就是这个类。
+// 定义一个类
+class User {
+  // constructor 上的数据需要先这样定好类型
+  name: string
+
+  // 入参也要定义类型
+  constructor(userName: string) {
+    this.name = userName
+  }
+
+  getName() {
+    console.log(this.name)
+  }
+}
+
+// 通过 new 这个类得到的变量，它的类型就是这个类
+const petter: User = new User('Petter')
+petter.getName() // Petter
+
 ## 7.1 类声明约束
 类修饰符:TypeScript里通过 public、private、protected 三个类修饰符来增强了 JS 中的类，成员都默认为 public即公有的，可以不写。
 当成员被标记成 private时私有的，只属于这个类自己，它的实例和继承它的子类都访问不到。
@@ -301,7 +334,8 @@ static 类的静态属性和方法是直接定义在类本身上面的，所以�
 readonly关键字将属性设置为只读的，只读属性必须在声明时或构造函数里被初始化。 
 //声明
 class Person {
-  name!: string; //如果初始属性没赋值就需要加上!
+  name!: string;                     //如果初始属性没赋值就需要加上!
+  readonly name: string = "world";   //只读
   constructor(_name: string) {
     this.name = _name;
   }
@@ -334,7 +368,58 @@ s1.study()
   抽象类中的抽象方法必须被子类实现
 使用场景：我们一般用抽象类和抽象方法抽离出事物的共性 以后所有继承的子类必须按照规范去实现自己的具体逻辑 这样可以增加代码的可维护性和复用性
 
-## 7.2 类实现接口
+
+
+## 7.2 类继承
+类之间继承
+// 父类
+class Animal {
+  move() {
+    console.log("Moving along!");
+  }
+}
+// 子类继承父类，拥有父类的属性和方法。
+class Dog extends Animal {
+  woof(times: number) {
+    for (let i = 0; i < times; i++) {
+      console.log("woof!");
+    }
+  }
+}
+ 
+const d = new Dog();
+// Base class method
+d.move();
+// Derived class method
+d.woof(3);
+
+## 7.3 类提供给接口继承
+类与类之间可以继承，类也可以给接口继承。都是通过 extends关键字实现。
+注意：如果类上面本身有方法存在，接口在继承的时候也要相应的实现。当然可以通过Omit工具类型去除。
+// 这是一个类
+class UserBase {
+  name: string
+  constructor(userName: string) {
+    this.name = userName
+  }
+  // 这是一个方法
+  getName() {
+    console.log(this.name)
+  }
+}
+
+// 这是一个接口，可以继承自类
+interface User extends UserBase {
+  age: number
+}
+
+// 这样这个变量就必须同时存在两个属性
+const petter: User = {
+  name: 'Petter',
+  age: 18,
+}
+
+## 7.4 类实现接口
 类实现(implements)接口：接口（Interfaces）除了可以用于对「对象的形状（Shape）」进行描述，还可以对类的一部分行为进行抽象。
 这是因为一般来讲，一个类只能继承自另一个类，而有时候不同类之间可以有一些共有的特性，这时候就可以把特性提取成接口（interfaces），用 implements 关键字来实现，一个类可以实现多个接口。这个特性大大提高了面向对象的灵活性。
 
