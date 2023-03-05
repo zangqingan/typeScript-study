@@ -18,6 +18,8 @@ TSc 就是TypeScript的编译器。
 
 
 # 二、类型
+
+## 2.1 类型概述
 在JavaScript中，JavaScript 的类型分为两种：原始数据类型（Primitive data types）和对象类型（Object types）。
 
 原始数据类型包括：布尔值、数值、字符串、null、undefined 以及 ES6 中的新类型 Symbol 和 ES10 中的新类型 BigInt。它们的类型约束在TS中都一一对应。
@@ -50,7 +52,7 @@ let 变量名:类型名 = 变量值;
 
 这样就表示变量 str 是字符串类型，如果赋值其它类型就会报错。
 这样就可以帮助我们提前发现代码中的错误。
-## 2.1 TS基本类型
+## 2.2 TS基本类型
 对应基本类型，TypeScript支持与JavaScript相同的基本数据类型，只不过名称转为全小写即可，此外还提供了其它的基础类型。 
 
 - TS和JS一样的原始类型如下：七种
@@ -111,8 +113,7 @@ never类型是完全没有返回值的类型，它是所有类型的子类型，
 如果没有明确的指定类型，那么 TypeScript 会依照类型推论（Type Inference）的规则推断出一个变量的类型。这就是所谓的类型推论。
 
 **注意：** 类型推论的前提是变量在声明时初始化了即有明确的值，如果一开始没有赋值，那么会被默认为 any 类型。
-
-## 2.2 TS非基本类型
+## 2.3 TS非基本类型
 可以说除了上面说的基本类型，剩下的都是非基本类型。和基本类型一样，JS里的非基本类型TS也都有对应的类型一一对应，也添加了另外的非基本类型。
 
 1. 对象的类型: 
@@ -227,6 +228,28 @@ let someValue: any = "this is a string";
 let strLength: number = (someValue as string).length;
 
 **注意：** 不要滥用类型断言，只在能够确保代码正确的情况下去使用它。
+
+9. 类型别名: 
+
+具体见类型别名一章
+
+10. 接口: 
+
+具体见接口一章
+
+11. 泛型: 
+
+具体见泛型一章
+
+12. 类: 
+
+具体见类一章
+
+13. 常用内置工具类型: 
+
+具体见内置工具类型一章
+
+
 
 
 # 三、接口
@@ -356,76 +379,180 @@ let mySum = function (x, y) {
 
 ```
 一个函数有输入和输出，输入就是传进来的形参，输出就是函数的返回值。
-所以要在 TypeScript 中对函数进行约束，需要把输入和输出都考虑到
-所有在TS中给每个形参添加类型之后再为函数本身添加返回值类型，就能完成对函数的约束了。
-而TypeScript可以根据返回语句自动推断出返回值类型，因此我们也通常省略它函数返回值的类型。
+所以要在 TypeScript 中对函数进行约束，需要把输入和输出都考虑到，其中函数声明的类型定义较简单：
 
-**注意：** 如果函数没有明确返回值，默认返回 void 类型。
-函数的入参是把类型写在参数后面，返回值是写在圆括号后面。具体语法如下：
+函数的入参是把类型写在形参后面，函数返回值是写在圆括号后面。
+
+具体语法如下：
 function (形参:形参类型): 函数返回值类型 {}
 function (x:number):void {}
-形参也是可以可选的这时要放在函数入参的最后面，不然会导致编译错误,也可以为参数提供一个默认值当用户没有传递这个参数或传递的值是undefined时就使用默认值，如果带默认值的参数不是最后一个参数，用户必须明确的传入 undefined值来获得默认值。
+
+```
+// ts对函数声明形式进行类型约束
+function sum(x: number, y?: number): number {
+    return x + y;
+}
+```
+
+形参也是可以可选的这时要放在函数入参的最后面，不然会导致编译错误。也可以为参数提供一个默认值当用户没有传递这个参数或传递的值是undefined时就使用默认值，如果带默认值的参数不是最后一个参数，用户必须明确的传入 undefined值来获得默认值。
+
+**注意：** 如果函数没有明确返回值，默认返回 void 类型。
 
 **注意：** 输入多余的（或者少于要求的）参数，是不被允许的
 
-// 函数声明形式
-function buildName(firstName: string, lastName?: string):string {
 
-}
 
-// 函数表达式形式
+如果要我们现在写一个对函数表达式（Function Expression）的定义，可能会写成这样：
+
 let myAdd = function(x: number, y: number): number { return x + y; };
-// 上面 myAdd变量的类型是TS通过赋值操作进行类型推论而推断出来的，其实是没有定义的。
+
+上面 myAdd变量的类型是TS通过赋值操作进行类型推论而推断出来的，其实是没有定义的。
+
+```
 手动定义如下：
-let myAdd: (x: number, y: number) => number = function (x: number, y: number): number {
+let myAdd: (x: number,firstName: string = 'Tom', y: number) => number = function (x: number, y: number): number {
     return x + y;
 };
-等于号左边是TS函数类型定义。
-let myAdd: (x: number, y: number) => number
+
+等于号左边是TS函数类型约束定义:let myAdd: (x: number, y: number) => number
+
 等于号右边是实际的函数声明。
 
-**注意：** 在 TypeScript 的类型定义中，函数类型是以 () => void 这样的形式来写的。
-=> 用来表示函数的定义，左边圆括号是函数的形参类型，需要用括号括起来，右边是输出类型。
-由于 TypeScript 会推导函数类型，所以很少会显式的去写出来。
+```
+
+**注意：** 在 TypeScript 的类型定义中，函数类型约束是以 () => void 这样的形式来写的。
+=> 用来表示函数的定义，左边圆括号是函数的形参类型，需要用括号括起来，右边是输出类型，也就是函数的返回值类型。由于 TypeScript 会推导函数类型，所以很少会显式的去写出来。
 
 
-当然这里可以先用接口或者类型别名定义好函数的形状。而对等号左侧进行类型限制，可以保证以后对函数名赋值时保证参数个数、参数类型、返回值类型不变。
+当然这里也可以先用接口或者类型别名定义好函数的形状。而对等号左侧进行类型限制，可以保证以后对函数名赋值时保证参数个数、参数类型、返回值类型不变。
+
+```
+// 接口或者类型别名定义好函数的形状
 interface MyAdd {
   (x: number, y: number) : number
 }
+
 type MyAdd = (x: number, y: number) => number
+
 let myAdd:MyAdd = function(x: number, y: number): number { return x + y; };
 
+```
+
 # 五、类型别名
-类型别名（type aliase）:用来给一个类型起个新名字,它有时和接口很像，但是可以作用于原始值，联合类型，元组以及其它任何你需要手写的类型。也就是用于给各种类型定义别名，让 TS 写起来更简洁、清晰。
-function hello(value: string | number) {}，我们可以给这个联合类型取一个名字标识，使用type关键字声明，有点像变量一样，这样这个联合类型就有了另一个等价的名字，使用这个别名即可。
+>类型别名（type aliase）:用来给一个类型起个新名字。
+
+它有时和接口很像，但是可以作用于原始值，联合类型，元组以及其它任何你需要手写的类型。也就是用于给各种类型定义别名，让 TS 写起来更简洁、清晰。
+
+类型别名使用type关键字声明，有点像变量一样，使用这个别名就相当于使用原类型。
 相当于使用type 声明类型变量了，常用于联合类型方便使用时缩写。
+
+```
+// 给这个联合类型取一个类型别名标识，
+function hello(value: string | number) {}，
 type flag = string | number;
-function hello(value: flag) {}
-type Name = string                              // 基本类型
-type arrItem = number | string                  // 联合类型
+function hello(value: flag) {}                          
+
+// 联合类型
+type arrItem = number | string                 
 const arr: arrItem[] = [1,'2', 3]
 
+// 基本类型
+type Name = string    
+
+// 交叉类型
 type Person = { 
   name: Name 
 }
-
-type Student = Person & { grade: number  }       // 交叉类型
-
+type Student = Person & { grade: number  }       
 type Teacher = Person & { major: string  } 
 
-type StudentAndTeacherList = [Student, Teacher]  // 元组类型
+// 元组类型
+type StudentAndTeacherList = [Student, Teacher]  
 const list:StudentAndTeacherList = [
   { name: 'lin', grade: 100 }, 
   { name: 'liu', major: 'Chinese' }
 ]
-字符串字面量类型：用来约束取值只能是某几个字符串中的一个。
-type EventNames = 'click' | 'scroll' | 'mousemove';
+
+```
+
+# 六、类
+
+## 6.1 类概述
+传统方法中，JavaScript 通过构造函数实现类的概念，通过原型链实现继承。而在 ES6 中，我们终于迎来了 class。通过使用 class 关键字声明，它也可以作为一个类型赋值给一个变量，这时变量的类型就是这个类。
+而TypeScript 除了实现了所有 ES6 中的类的功能以外，还添加了一些新的用法。
+这里对类相关的概念做一个简单的介绍。
+
+- 类（Class）：定义了一类事物的抽象特点，包含它的属性和方法。
+
+- 对象（Object）：类的实例，通过 new 生成。
+
+- 面向对象（OOP）的三大特性：封装、继承、多态
+
+- 封装（Encapsulation）：将对数据的操作细节隐藏起来，只暴露对外的接口。外界只调用而不需要（也不 能）知道细节，就能通过对外提供的接口来访问该对象，同时也保证了外界无法任意更改对象内部的数据。
+
+- 继承（Inheritance）：子类继承父类，子类除了拥有父类的所有特性外，还有一些更具体的特性。
+
+- 多态（Polymorphism）：由继承而产生了相关的不同的类，对同一个方法可以有不同的响应。比如 Cat和 Dog 都继承自 Animal，但是分别实现了自己的 eat 方法。此时针对某一个实例，我们无需了解它是 Cat 还是 Dog，就可以直接调用 eat 方法，程序会自动判断出来应该如何执行 eat。
+
+- 存取器（getter & setter）：用以改变属性的读取和赋值行为。
+
+- 修饰符（Modifiers）：修饰符是一些关键字，用于限定类成员或类型的性质。比如 public 表示公有属性或方法。
+
+- 抽象类（Abstract Class）：抽象类是供其他类继承的基类，抽象类不允许被实例化(不能 new)。抽象类中的抽象方法必须在子类中被实现。
+
+- 接口（Interfaces）：不同类之间公有的属性或方法，可以抽象成一个接口。接口可以被类实现（implements）。一个类只能继承自另一个类，但是可以实现多个接口。
+
+下面回顾一下 ES6 中类的用法：
+
+使用 class 关键字定义类，使用 constructor()方法 定义构造函数。通过 new 生成新实例的时候，会自动调用构造函数。
+
+- 在 JavaScript 中定义一个类。
+```
+class User {
+  <!-- 私有属性，方法是在属性名之前使用#表示。只能在类的内部使用 -->
+  #count = 0;
+  constructor(userName: string) {
+    <!-- this关键字则代表new出来的实例对象 -->
+    this.name = userName
+  }
+  get prop() {
+    return 'getter';
+  }
+  set prop(value) {
+    console.log('setter: '+value);
+  }
+  getName() {
+    console.log(this.name)
+  }
+  <!-- 静态方法-只能类本身调用，可以被子类继承 -->
+  static classMethod() {
+    return 'hello';
+  }
+}
+// 通过 new 生成新实例
+const petter= new User('Petter')
+
+petter.getName() 
+// Petter
+
+petter.prop = 123;
+// setter: 123
+
+petter.prop
+// 'getter'
+
+User.classMethod() 
+// 'hello'
 
 
-# 七、类
-类是es6 推出的一个概念，通过使用class关键字声明。它也可以作为一个类型赋值给一个变量，这时变量的类型就是这个类。
-// 定义一个类
+
+```
+
+
+
+## 6.2 类声明约束
+- es6定义一个类
+```
 class User {
   // constructor 上的数据需要先这样定好类型
   name: string
@@ -439,12 +566,10 @@ class User {
     console.log(this.name)
   }
 }
-
 // 通过 new 这个类得到的变量，它的类型就是这个类
 const petter: User = new User('Petter')
 petter.getName() // Petter
-
-## 7.1 类声明约束
+```
 类修饰符:TypeScript里通过 public、private、protected 三个类修饰符来增强了 JS 中的类，成员都默认为 public即公有的，可以不写。
 当成员被标记成 private时私有的，只属于这个类自己，它的实例和继承它的子类都访问不到。
 protected受保护的与 private修饰符的行为很相似，但有一点不同，继承它的子类可以访问，实例不能访问。
@@ -488,7 +613,7 @@ s1.study()
 
 
 
-## 7.2 类继承
+## 6.3 类继承
 类之间继承
 // 父类
 class Animal {
@@ -511,7 +636,7 @@ d.move();
 // Derived class method
 d.woof(3);
 
-## 7.3 类提供给接口继承
+## 6.4 类提供给接口继承
 类与类之间可以继承，类也可以给接口继承。都是通过 extends关键字实现。
 
 **注意：** 如果类上面本身有方法存在，接口在继承的时候也要相应的实现。当然可以通过Omit工具类型去除。
@@ -538,7 +663,7 @@ const petter: User = {
   age: 18,
 }
 
-## 7.4 类实现接口
+## 6.5 类实现接口
 类实现(implemenTS)接口：接口（Interfaces）除了可以用于对「对象的形状（Shape）」进行描述，还可以对类的一部分行为进行抽象。
 这是因为一般来讲，一个类只能继承自另一个类，而有时候不同类之间可以有一些共有的特性，这时候就可以把特性提取成接口（interfaces），用 implemenTS 关键字来实现，一个类可以实现多个接口。这个特性大大提高了面向对象的灵活性。
 
@@ -562,13 +687,21 @@ class Car implemenTS Alarm {
     }
 }
 
-# 八、泛型
-## 8.1 泛型概述
-泛型（Generics）是指在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定类型的一种特性。可以理解为类型的形参，通过类型变量将类型参数化。类型变量它是一种特殊的变量，只用于表示类型而不是值。也就是将来使用具体的类型代替类型变量，一般可以用 T 代表 Type 来表示类型变量。
-常见泛型变量代表还有如下几个
-  K（Key）：表示对象中的键类型；
-  V（Value）：表示对象中的值类型；
-  E（Element）：表示元素类型。
+# 七、泛型
+## 7.1 泛型概述
+>泛型（Generics）是指在定义函数、接口或类的时候，不预先指定具体的类型，而在使用的时候再指定类型的一种特性。
+
+可以理解为类型的形参，通过类型变量将类型参数化。类型变量它是一种特殊的变量，只用于表示类型而不是具体的类型值。也就是将来使用具体的类型代替类型变量，一般可以用 T 代表 Type 来表示类型变量。
+
+- 常见泛型变量代表还有如下几个：
+
+| 写法          |         含义	     |
+| :-----        |    :----          |
+| K（Key）：    | 表示对象中的键类型； |
+| V（Value）：  |  表示对象中的值类型；|
+| E（Element）：|  表示元素类型。      |
+
+
 语法:
 <类型变量1,类型变量2,.....,>表示一个泛型,其中它可以包含多个类型变量，类型变量可以是TS中的基本类型也可以是元祖、接口、类型别名等等。
 <T>，这样就定义了一个泛型。
@@ -576,7 +709,7 @@ class Car implemenTS Alarm {
 当你的函数、接口或类将处理多种数据类型时或者当函数、接口或类在多个地方使用该数据类型时就应该使用泛型。
 只是声明的时候添加起到一个占位符号的作用，实际类型是在使用时传入的。
 
-## 8.2泛型处理函数
+## 6.2泛型处理函数
 我们知道之前TS约束函数是如下声明的，而泛型处理函数是在函数名后面加上泛型定义 <泛型变量名>，这样函数形参、函数返回值就可以使用泛型变量约束。这时在函数调用时再具体声明泛型变量的类型即可。
 定义一个 print 函数，这个函数的功能是把传入的参数打印出来，再返回这个参数，传入参数的类型是 string，函数返回类型为 string。
 <!-- 函数声明形式 -->
@@ -596,7 +729,7 @@ print<string>('hello');
 // TS类型推断 自动推导出类型
 print('hello')  // TS 类型推断，自动推导类型为 string
 
-## 8.3 泛型接口和泛型类型别名
+## 6.3 泛型接口和泛型类型别名
 在使用函数表达式形式的时候是可以使用接口和类型别名对变量进行约束的。同样他们也可以使用泛型进行约束。
 <!-- 普通约束 -->
 interface MyAdd {
@@ -631,7 +764,7 @@ console.log(identity(68, "Semlinker"));这里就会触发类型推断，TS自动
 泛型也可以继承接口或者类型别名
 
 
-## 8.4 泛型类
+## 6.4 泛型类
 在类中使用泛型也很简单，我们只需要在类名后面，使用 <T, ...> 的语法定义任意多个类型变量。
 特别注意的是，泛型无法约束类的静态成员。
 interface GenericInterface<U> {
@@ -657,15 +790,21 @@ const myStringClass = new IdentityClass<string>("Semlinker!");
 console.log(myStringClass.getIdentity()); // Semlinker!
 类型值是沿链向上传播，且与类型变量名无关。所以上面类型变量名U和T并不影响传值。
 
-## 8.5 泛型约束
+## 6
+
+
+
+
+.5 泛型约束
 希望类型变量对应的类型上存在某些属性。这时，除非我们显式地将特定属性定义为类型变量，否则编译器不会知道它们的存在。这时可以让类型变量 extends 一个含有我们所需属性的接口。此外，我们还可以使用逗号 , 号来分隔多种约束类型，比如：<T extends Length, Type2, Type3>。
 keyof操作符用于获取某种类型的所有键，其返回类型是联合类型。
 
 
-# 九、工具类型
+
+# 八、常用内置工具类型
 Partail部分属性
 
-# 十、TS类型体操训练
+# 九、TS类型体操训练
 环境搭建：创建一个type-challenges目录专门用来存放，安装@type-challenges/utils包用来检测自己写的是否正确。
 实现写在template.TS里，测试case复制原仓库里的，还可以把readme文件拿过来说明当前类型训练的要求是什么。
 
@@ -686,7 +825,7 @@ type OptionsFlags<T> = {
 
 
 
-# 十一、其它
+# 十、其它
 
 声明文件：当使用第三方库时，我们需要引用它的声明文件，才能获得对应的代码补全、接口提示等功能。
   declare var 声明全局变量
