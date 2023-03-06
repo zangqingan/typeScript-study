@@ -476,7 +476,6 @@ const list:StudentAndTeacherList = [
 ```
 
 # 六、类
-
 ## 6.1 类概述
 传统方法中，JavaScript 通过构造函数实现类的概念，通过原型链实现继承。而在 ES6 中，我们终于迎来了 class。通过使用 class 关键字声明，它也可以作为一个类型赋值给一个变量，这时变量的类型就是这个类。
 而TypeScript 除了实现了所有 ES6 中的类的功能以外，还添加了一些新的用法。
@@ -544,25 +543,35 @@ petter.prop
 User.classMethod() 
 // 'hello'
 
-
-
 ```
+## 6.2 ts类声明约束
+TS类定义声明增强了 JS 中的类，使用三种访问修饰符（Access Modifiers），分别是 public、private 和 protected来标识一个类的属性和方式是什么性质的。
+
+- public 修饰的属性或方法是公有的，可以在任何地方被访问到，默认所有的属性和方法都是 public 的，关键字public可以不写。
+
+- private 修饰的属性或方法是私有的，不能在声明它的类的外部访问。即只属于这个类自己，它的实例和继承它的子类都访问不到。
+
+- protected 修饰的属性或方法是受保护的，它和 private 类似，区别是它在子类中也是允许被访问的，实例不能访问。
+
+- static 修饰的静态属性和方法是直接定义在类本身上面的，所以也只能通过直接调用类的方法和属性来访问，实例不能访问，访问会报错。
+
+- readonly关键字将属性设置为只读的，只读属性必须在声明时或构造函数里被初始化。
+
+本质上和js声明定义使用类是没有区别的，不过ts更加完善并加上了类型约束。而给类加上 TypeScript 的类型很简单与接口类似。
 
 
-
-## 6.2 类声明约束
-- es6定义一个类
+- ts定义一个类
 ```
 class User {
   // constructor 上的数据需要先这样定好类型
-  name: string
+  public name: string
 
   // 入参也要定义类型
   constructor(userName: string) {
     this.name = userName
   }
 
-  getName() {
+  getName():void {
     console.log(this.name)
   }
 }
@@ -570,51 +579,10 @@ class User {
 const petter: User = new User('Petter')
 petter.getName() // Petter
 ```
-类修饰符:TypeScript里通过 public、private、protected 三个类修饰符来增强了 JS 中的类，成员都默认为 public即公有的，可以不写。
-当成员被标记成 private时私有的，只属于这个类自己，它的实例和继承它的子类都访问不到。
-protected受保护的与 private修饰符的行为很相似，但有一点不同，继承它的子类可以访问，实例不能访问。
-static 类的静态属性和方法是直接定义在类本身上面的，所以也只能通过直接调用类的方法和属性来访问，实例不能访问，访问会报错。
-readonly关键字将属性设置为只读的，只读属性必须在声明时或构造函数里被初始化。 
-//声明
-class Person {
-  name!: string;                     //如果初始属性没赋值就需要加上!
-  readonly name: string = "world";   //只读
-  constructor(_name: string) {
-    this.name = _name;
-  }
-  getName(): void {
-    console.log(this.name);
-  }
-}
-let p1 = new Person("hello");
-p1.getName();
-//子类继承，如果有自己的属性要使用super关键字执行，使用 super 关键字会调用父类的构造函数和方法。
-class Student extends Person {
-  grade: number
-  constructor(name: string,grade:number) {
-      super(name) // 相当于调用父类的 constructor(name)
-      this.grade = grade
-  }
-  study() {
-      console.log(${this.name} needs study)
-  }
-}
-
-const s1 = new Student('lin',600)
-s1.study()
-
-多态子类对父类的方法进行了重写，子类和父类调同一个方法时会不一样。
-
-抽象类:使用abstract声明的只能被继承，但不能被实例化的类，抽象类是供其他类继承的基类。
-特点:
-  抽象类不允许被实例化,即new调用。
-  抽象类中的抽象方法必须被子类实现
-使用场景：我们一般用抽象类和抽象方法抽离出事物的共性 以后所有继承的子类必须按照规范去实现自己的具体逻辑 这样可以增加代码的可维护性和复用性
-
-
-
 ## 6.3 类继承
-类之间继承
+类可以通过extends关键字实现继承，让子类继承父类的属性和方法。
+extends 的写法比 ES5 的原型链继承，要清晰和方便很多。
+```
 // 父类
 class Animal {
   move() {
@@ -635,11 +603,12 @@ const d = new Dog();
 d.move();
 // Derived class method
 d.woof(3);
-
-## 6.4 类提供给接口继承
-类与类之间可以继承，类也可以给接口继承。都是通过 extends关键字实现。
+```
+## 6.4 接口继承类
+类与类之间可以继承，类也可以给接口继承 只会继承它的实例属性和实例方法。都是通过 extends关键字实现。这是因为在声明 class Point 时，除了会创建一个名为 Point 的类之外，同时也创建了一个名为 Point 的类型（实例的类型）。
 
 **注意：** 如果类上面本身有方法存在，接口在继承的时候也要相应的实现。当然可以通过Omit工具类型去除。
+```
 // 这是一个类
 class UserBase {
   name: string
@@ -662,12 +631,15 @@ const petter: User = {
   name: 'Petter',
   age: 18,
 }
+```
 
 ## 6.5 类实现接口
 类实现(implemenTS)接口：接口（Interfaces）除了可以用于对「对象的形状（Shape）」进行描述，还可以对类的一部分行为进行抽象。
+
 这是因为一般来讲，一个类只能继承自另一个类，而有时候不同类之间可以有一些共有的特性，这时候就可以把特性提取成接口（interfaces），用 implemenTS 关键字来实现，一个类可以实现多个接口。这个特性大大提高了面向对象的灵活性。
 
 举例来说，门是一个类，防盗门是门的子类。如果防盗门有一个报警器的功能，我们可以简单的给防盗门添加一个报警方法。这时候如果有另一个类，车，也有报警器的功能，就可以考虑把报警器提取出来，作为一个接口，防盗门和车都去实现它：
+```
 interface Alarm {
     alert(): void;
 }
@@ -675,17 +647,18 @@ interface Alarm {
 class Door {
 }
 
-class SecurityDoor extends Door implemenTS Alarm {
+class SecurityDoor extends Door implements Alarm {
     alert() {
         console.log('SecurityDoor alert');
     }
 }
 
-class Car implemenTS Alarm {
+class Car implements Alarm {
     alert() {
         console.log('Car alert');
     }
 }
+```
 
 # 七、泛型
 ## 7.1 泛型概述
@@ -706,12 +679,17 @@ class Car implemenTS Alarm {
 <类型变量1,类型变量2,.....,>表示一个泛型,其中它可以包含多个类型变量，类型变量可以是TS中的基本类型也可以是元祖、接口、类型别名等等。
 <T>，这样就定义了一个泛型。
 
-当你的函数、接口或类将处理多种数据类型时或者当函数、接口或类在多个地方使用该数据类型时就应该使用泛型。
+当你的函数、接口或类将处理多种数据类型时或者在多个地方使用该数据类型时就应该使用泛型。
 只是声明的时候添加起到一个占位符号的作用，实际类型是在使用时传入的。
 
-## 6.2泛型处理函数
+## 7.2泛型处理函数
 我们知道之前TS约束函数是如下声明的，而泛型处理函数是在函数名后面加上泛型定义 <泛型变量名>，这样函数形参、函数返回值就可以使用泛型变量约束。这时在函数调用时再具体声明泛型变量的类型即可。
-定义一个 print 函数，这个函数的功能是把传入的参数打印出来，再返回这个参数，传入参数的类型是 string，函数返回类型为 string。
+
+
+
+- 定义一个 print 函数，这个函数的功能是把传入的参数打印出来，再返回这个参数，传入参数的类型是 string，函数返回类型为 string。
+
+```
 <!-- 函数声明形式 -->
 // 普通约束
 function print(arg:string):string {
@@ -729,8 +707,13 @@ print<string>('hello');
 // TS类型推断 自动推导出类型
 print('hello')  // TS 类型推断，自动推导类型为 string
 
-## 6.3 泛型接口和泛型类型别名
+```
+
+## 7.3 泛型接口和泛型类型别名
 在使用函数表达式形式的时候是可以使用接口和类型别名对变量进行约束的。同样他们也可以使用泛型进行约束。
+
+- 泛型接口
+```
 <!-- 普通约束 -->
 interface MyAdd {
   (x: number, y: number) : number
@@ -743,8 +726,10 @@ interface MyAdd<T> {
 }
 type MyAddG = <T>(x: T, y: T) => T
 let myAdd:MyAddG = function(x: number, y: number): number { return x + y; };
+```
 
-在定义接口时也可以使用泛型
+- 在定义接口时也可以使用泛型
+```
 interface Identities<T, U> {
   value: T,
   message: U
@@ -762,11 +747,12 @@ identity<number,string>(68, "Semlinker"));这里是显式指定泛型变量的�
 console.log(identity(68, "Semlinker"));这里就会触发类型推断，TS自动识别
 
 泛型也可以继承接口或者类型别名
+```
 
-
-## 6.4 泛型类
+## 7.4 泛型类
 在类中使用泛型也很简单，我们只需要在类名后面，使用 <T, ...> 的语法定义任意多个类型变量。
 特别注意的是，泛型无法约束类的静态成员。
+```
 interface GenericInterface<U> {
   value: U
   getIdentity: () => U
@@ -788,23 +774,46 @@ console.log(myNumberClass.getIdentity()); // 68
 
 const myStringClass = new IdentityClass<string>("Semlinker!");
 console.log(myStringClass.getIdentity()); // Semlinker!
+
+```
+
 类型值是沿链向上传播，且与类型变量名无关。所以上面类型变量名U和T并不影响传值。
 
-## 6
-
-
-
-
-.5 泛型约束
+## 7.5 泛型约束
 希望类型变量对应的类型上存在某些属性。这时，除非我们显式地将特定属性定义为类型变量，否则编译器不会知道它们的存在。这时可以让类型变量 extends 一个含有我们所需属性的接口。此外，我们还可以使用逗号 , 号来分隔多种约束类型，比如：<T extends Length, Type2, Type3>。
-keyof操作符用于获取某种类型的所有键，其返回类型是联合类型。
-
 
 
 # 八、常用内置工具类型
 Partail部分属性
 
-# 九、TS类型体操训练
+# 九、其它
+## 9.1 声明文件
+当使用第三方库时，我们需要引用它的声明文件，这样才能获得对应的代码补全、接口提示等功能。
+
+- 常见声明类型
+
+| 声明语句     |  含义	 |
+| :-----      |    :--:     |
+| declare var         |声明全局变量|
+| declare function    |声明全局方法|
+| declare class       |声明全局类|
+| declare enum        |声明全局枚举类型|
+| declare namespace   |声明（含有子属性的）全局对象|
+| interface 和 type   |声明全局类型|
+| export              |导出变量|
+| export namespace    |导出（含有子属性的）对象|
+| export default ES6  |默认导出|
+| export = commonJS   |导出模块|
+| export as namespace |UMD 库声明全局变量|
+| declare global      |扩展全局变量|
+| declare module      |扩展模块|
+| /// <reference />   |三斜线指令|
+
+通常我们会把声明语句都放到一个单独的文件（xxx.d.ts）中，这就是声明文件。
+
+**注意：** 声明文件必需以 xxx.d.ts 为后缀。
+
+# 十、TS类型体操训练
 环境搭建：创建一个type-challenges目录专门用来存放，安装@type-challenges/utils包用来检测自己写的是否正确。
 实现写在template.TS里，测试case复制原仓库里的，还可以把readme文件拿过来说明当前类型训练的要求是什么。
 
@@ -817,34 +826,9 @@ type OptionsFlags<T> = {
   [P in keyof Type]-?: T[P];
   [P in keyof T as NewKeyType]: T[P]
 };
+
 上面的类型OptionsFlags将从类型Type中获取它的所有属性，并将其值更改为布尔值。也就是所OptionsFlags类型的属性名是Type里所有的属性名，但是值统一改成了布尔值类型。
+
 对于只读和可选属性可以通过 - 符号来去除。
 此外还可以通过 as 关键字 重命名key 的名字
-
-
-
-
-
-# 十、其它
-
-声明文件：当使用第三方库时，我们需要引用它的声明文件，才能获得对应的代码补全、接口提示等功能。
-  declare var 声明全局变量
-  declare function 声明全局方法
-  declare class 声明全局类
-  declare enum 声明全局枚举类型
-  declare namespace 声明（含有子属性的）全局对象
-  interface 和 type 声明全局类型
-  export 导出变量
-  export namespace 导出（含有子属性的）对象
-  export default ES6 默认导出
-  export = commonJS 导出模块
-  export as namespace UMD 库声明全局变量
-  declare global 扩展全局变量
-  declare module 扩展模块
-  /// <reference /> 三斜线指令
-
-通常我们会把声明语句放到一个单独的文件（xxx.d.ts）中，这就是声明文件。
-
-**注意：** 声明文件必需以 .d.ts 为后缀。
-
 
