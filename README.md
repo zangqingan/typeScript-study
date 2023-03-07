@@ -709,7 +709,7 @@ class Car implemenTS Alarm {
 当你的函数、接口或类将处理多种数据类型时或者当函数、接口或类在多个地方使用该数据类型时就应该使用泛型。
 只是声明的时候添加起到一个占位符号的作用，实际类型是在使用时传入的。
 
-## 6.2泛型处理函数
+## 7.2泛型处理函数
 我们知道之前TS约束函数是如下声明的，而泛型处理函数是在函数名后面加上泛型定义 <泛型变量名>，这样函数形参、函数返回值就可以使用泛型变量约束。这时在函数调用时再具体声明泛型变量的类型即可。
 定义一个 print 函数，这个函数的功能是把传入的参数打印出来，再返回这个参数，传入参数的类型是 string，函数返回类型为 string。
 <!-- 函数声明形式 -->
@@ -729,7 +729,7 @@ print<string>('hello');
 // TS类型推断 自动推导出类型
 print('hello')  // TS 类型推断，自动推导类型为 string
 
-## 6.3 泛型接口和泛型类型别名
+## 7.3 泛型接口和泛型类型别名
 在使用函数表达式形式的时候是可以使用接口和类型别名对变量进行约束的。同样他们也可以使用泛型进行约束。
 <!-- 普通约束 -->
 interface MyAdd {
@@ -764,7 +764,7 @@ console.log(identity(68, "Semlinker"));这里就会触发类型推断，TS自动
 泛型也可以继承接口或者类型别名
 
 
-## 6.4 泛型类
+## 7.4 泛型类
 在类中使用泛型也很简单，我们只需要在类名后面，使用 <T, ...> 的语法定义任意多个类型变量。
 特别注意的是，泛型无法约束类的静态成员。
 interface GenericInterface<U> {
@@ -790,40 +790,50 @@ const myStringClass = new IdentityClass<string>("Semlinker!");
 console.log(myStringClass.getIdentity()); // Semlinker!
 类型值是沿链向上传播，且与类型变量名无关。所以上面类型变量名U和T并不影响传值。
 
-## 6
-
-
-
-
-.5 泛型约束
-希望类型变量对应的类型上存在某些属性。这时，除非我们显式地将特定属性定义为类型变量，否则编译器不会知道它们的存在。这时可以让类型变量 extends 一个含有我们所需属性的接口。此外，我们还可以使用逗号 , 号来分隔多种约束类型，比如：<T extends Length, Type2, Type3>。
-keyof操作符用于获取某种类型的所有键，其返回类型是联合类型。
-
+## 7.5 泛型约束
+如果希望类型变量对应的类型上存在某些属性。这时，除非我们显式地将特定属性定义为类型变量，否则编译器不会知道它们的存在。这时可以让类型变量 extends 一个含有我们所需属性的接口。此外，我们还可以使用逗号 , 号来分隔多种约束类型，比如：<T extends Length, Type2, Type3>。
 
 
 # 八、常用内置工具类型
-Partail部分属性
+> TypeScript提供的全局实用工具类型，它们是用来促进公共类型转换。
+
+这些工具类型主要分为4类以及其它的一些类型。
+| 工具类型分类     | 包含类型	|
+| :---            |    :----:   |
+| 属性修饰工具类型  | Partial（部分的）、Required（必须的）、Readonly（只读的）|
+| 结构工具类型     | Record（记录）、Pick（选择）、Omit（省略）|
+| 集合工具类型     | Extract（取出）、Exclude（排除）、NonNullable（不能为null）|
+| 模式匹配工具类型 | Parameters（参数）、ReturnType（返回类型）、ConstructorParameters（构造参数）、InstanceType（构造返回类型、实例类型）|
+
+## 8.1 属性修饰工具类型
+## 8.2 结构工具类型
+Pick工具类：通过从传入的type中选择一组属性key(字符串字面量或字符串字面量的联合)来重新构造一个类型。
+
+```
+<!-- 例子 -->
+interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+ 
+type TodoPreview = Pick<Todo, "title" | "completed">;
+ 
+const todo: TodoPreview = {
+  title: "Clean room",
+  completed: false,
+};
+```
+## 8.3 集合工具类型
+## 8.4 模式匹配工具类型
+## 8.5 其它工具类型
 
 # 九、TS类型体操训练
-环境搭建：创建一个type-challenges目录专门用来存放，安装@type-challenges/utils包用来检测自己写的是否正确。
-实现写在template.TS里，测试case复制原仓库里的，还可以把readme文件拿过来说明当前类型训练的要求是什么。
+环境搭建：创建一个type-challenges目录专门用来存放。
 
-映射类型：所谓映射类型：它是一种泛型类型，它使用PropertyKeys的联合（通常通过keyof创建）来遍历键以创建类型。
-通过in 和 keyof 完成。
-type OptionsFlags<T> = {
-  属性名：属性值
-  -readonly [P in keyof T]: T[P];
-  -readonly [Property in keyof Type]: boolean;
-  [P in keyof Type]-?: T[P];
-  [P in keyof T as NewKeyType]: T[P]
-};
-上面的类型OptionsFlags将从类型Type中获取它的所有属性，并将其值更改为布尔值。也就是所OptionsFlags类型的属性名是Type里所有的属性名，但是值统一改成了布尔值类型。
-对于只读和可选属性可以通过 - 符号来去除。
-此外还可以通过 as 关键字 重命名key 的名字
+安装 @type-challenges/utils 包用来检测自己写的是否正确。
 
-
-
-
+实现写在template.ts里，测试case复制原仓库里的，还可以把readme文件拿过来说明当前类型训练的要求是什么，使用了那些知识点。
 
 # 十、其它
 
