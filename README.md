@@ -727,40 +727,47 @@ print('hello')  // TS 类型推断,自动推导类型为 string
 - 泛型接口
 
 ```
+
 <!-- 普通约束 -->
+
 interface MyAdd {
-  (x: number, y: number) : number
+(x: number, y: number) : number
 }
 type MyAdd = (x: number, y: number) => number
 let myAdd:MyAdd = function(x: number, y: number): number { return x + y; };
+
 <!-- 泛型约束 -->
+
 interface MyAdd<T> {
-  (x: T, y: T) : T
+(x: T, y: T) : T
 }
 type MyAddG = <T>(x: T, y: T) => T
 let myAdd:MyAddG = function(x: number, y: number): number { return x + y; };
+
 ```
 
 - 在定义接口时也可以使用泛型
 
 ```
+
 interface Identities<T, U> {
-  value: T,
-  message: U
+value: T,
+message: U
 }
 function identity<T, U> (value: T, message: U): Identities<T, U> {
-  console.log(value + ": " + typeof (value));
-  console.log(message + ": " + typeof (message));
-  let identities: Identities<T, U> = {
-    value,
-    message
-  };
-  return identities;
+console.log(value + ": " + typeof (value));
+console.log(message + ": " + typeof (message));
+let identities: Identities<T, U> = {
+value,
+message
+};
+return identities;
 }
 identity<number,string>(68, "Semlinker"));这里是显式指定泛型变量的实际类型
-console.log(identity(68, "Semlinker"));这里就会触发类型推断,TS自动识别
+console.log(identity(68, "Semlinker"));这里就会触发类型推断,TS 自动识别
 
 泛型也可以继承接口或者类型别名
+
 ```
 
 
@@ -769,19 +776,20 @@ console.log(identity(68, "Semlinker"));这里就会触发类型推断,TS自动�
 在类中使用泛型也很简单，我们只需要在类名后面，使用 <T, ...> 的语法定义任意多个类型变量。
 特别注意的是，泛型无法约束类的静态成员。
 ```
+
 interface GenericInterface<U> {
-  value: U
-  getIdentity: () => U
+value: U
+getIdentity: () => U
 }
-//类实现接口implemenTS
+//类实现接口 implemenTS
 class IdentityClass<T> implemenTS GenericInterface<T> {
-  value: T
-  constructor(value: T) {
-    this.value = value
-  }
-  getIdentity(): T {
-    return this.value
-  }
+value: T
+constructor(value: T) {
+this.value = value
+}
+getIdentity(): T {
+return this.value
+}
 
 }
 
@@ -853,3 +861,4 @@ type OptionsFlags<T> = {
 
 对于只读和可选属性可以通过 - 符号来去除。
 此外还可以通过 as 关键字 重命名 key 的名字
+```
